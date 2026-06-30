@@ -1,0 +1,100 @@
+{
+  "_descricao": "Gabarito da POC de similaridade entre petições jurídicas. Chaves iniciadas com '_' são comentários (JSON não suporta comentários nativos). Os 16 documentos estão organizados em 4 casos-base; cada caso-base tem 4 papéis: original, copia, parente (mesma tese, fatos e vocabulario diferentes) e impostor (assunto diferente, coincide so na citacao generica do art. 6, VI do CDC).",
+
+  "_rotulos_possiveis": ["copia", "versao", "parente_de_tese", "diferente"],
+
+  "_observacao_versao": "Este dataset NAO inclui um exemplo do rotulo 'versao' (mesmo caso com texto editado/reescrito parcialmente). Os papeis pedidos para a Fase 1 foram apenas original/copia/parente/impostor. O rotulo 'versao' continua no espaco de classificacao do sistema; se quiser exercita-lo, basta acrescentar depois uma variacao editada de um original.",
+
+  "_citacao_generica_compartilhada": "Em cada caso-base, o original e o seu impostor citam ambos o art. 6, VI do CDC (reparacao de danos) - a clausula mais boilerplate do Codigo. Esse e o unico ponto de contato entre eles. E exatamente o jargao que a Fase 6 deve filtrar para nao confundir impostor com parente.",
+
+  "casos_base": {
+    "voo": {
+      "tema": "transporte aereo - voo cancelado",
+      "tese": "responsabilidade objetiva do fornecedor por falha na prestacao do servico; cancelamento sem aviso gera dano moral",
+      "artigo_nucleo": "art. 14 do CDC",
+      "original": "maria"
+    },
+    "saude": {
+      "tema": "plano de saude - negativa de cobertura de tratamento prescrito",
+      "tese": "recusa de cobertura de procedimento indicado pelo medico e abusiva e enseja dano moral",
+      "artigo_nucleo": "art. 51, IV do CDC",
+      "original": "carlos"
+    },
+    "produto": {
+      "tema": "vicio do produto - eletrodomestico/equipamento defeituoso",
+      "tese": "vicio nao sanado em 30 dias gera direito a troca ou restituicao, com responsabilidade solidaria do fornecedor",
+      "artigo_nucleo": "art. 18 do CDC",
+      "original": "sandra"
+    },
+    "negativacao": {
+      "tema": "inscricao indevida do nome em cadastro de inadimplentes",
+      "tese": "negativacao por divida inexistente gera dano moral in re ipsa e repeticao do indebito em dobro",
+      "artigo_nucleo": "art. 42, paragrafo unico do CDC",
+      "original": "fernando"
+    }
+  },
+
+  "documentos": {
+    "maria":    { "arquivo": "maria.txt",    "caso_base": "voo",         "papel": "original", "reu": "LATAM",                "tema": "voo cancelado" },
+    "joao":     { "arquivo": "joao.txt",     "caso_base": "voo",         "papel": "copia",    "reu": "LATAM",                "tema": "voo cancelado",        "_nota": "texto identico ao de maria; mudam apenas nome, CPF, endereco e genero gramatical" },
+    "pedro":    { "arquivo": "pedro.txt",    "caso_base": "voo",         "papel": "parente",  "reu": "GOL",                  "tema": "voo cancelado",        "_nota": "mesma tese de maria, com fatos (trecho, datas, valores) e vocabulario completamente diferentes" },
+    "ana":      { "arquivo": "ana.txt",      "caso_base": "voo",         "papel": "impostor", "reu": "Itau",                 "tema": "cobranca indevida em cartao", "_nota": "assunto diferente; coincide com maria so na citacao do art. 6, VI do CDC" },
+
+    "carlos":   { "arquivo": "carlos.txt",   "caso_base": "saude",       "papel": "original", "reu": "Unimed",               "tema": "negativa de cirurgia" },
+    "beatriz":  { "arquivo": "beatriz.txt",  "caso_base": "saude",       "papel": "copia",    "reu": "Unimed",               "tema": "negativa de cirurgia", "_nota": "texto identico ao de carlos; mudam apenas dados pessoais e genero" },
+    "rafael":   { "arquivo": "rafael.txt",   "caso_base": "saude",       "papel": "parente",  "reu": "Amil",                 "tema": "negativa de quimioterapia", "_nota": "mesma tese de carlos (negativa abusiva de tratamento prescrito) com fatos e vocabulario distintos" },
+    "juliana":  { "arquivo": "juliana.txt",  "caso_base": "saude",       "papel": "impostor", "reu": "Construtora Horizonte","tema": "atraso na entrega de imovel", "_nota": "assunto diferente; coincide com carlos so na citacao do art. 6, VI do CDC" },
+
+    "sandra":   { "arquivo": "sandra.txt",   "caso_base": "produto",     "papel": "original", "reu": "Eletro Center",        "tema": "geladeira com defeito" },
+    "marcos":   { "arquivo": "marcos.txt",   "caso_base": "produto",     "papel": "copia",    "reu": "Eletro Center",        "tema": "geladeira com defeito", "_nota": "texto identico ao de sandra; mudam apenas dados pessoais e genero" },
+    "patricia": { "arquivo": "patricia.txt", "caso_base": "produto",     "papel": "parente",  "reu": "Infoshop",             "tema": "notebook com defeito", "_nota": "mesma tese de sandra (vicio do produto nao sanado) com produto, fatos e vocabulario distintos" },
+    "bruno":    { "arquivo": "bruno.txt",    "caso_base": "produto",     "papel": "impostor", "reu": "Mundo Viagens",        "tema": "pacote turistico cancelado", "_nota": "assunto diferente; coincide com sandra so na citacao do art. 6, VI do CDC" },
+
+    "fernando": { "arquivo": "fernando.txt", "caso_base": "negativacao", "papel": "original", "reu": "Telecom Brasil",       "tema": "negativacao por divida paga" },
+    "lucas":    { "arquivo": "lucas.txt",    "caso_base": "negativacao", "papel": "copia",    "reu": "Telecom Brasil",       "tema": "negativacao por divida paga", "_nota": "texto identico ao de fernando; mudam apenas dados pessoais" },
+    "camila":   { "arquivo": "camila.txt",   "caso_base": "negativacao", "papel": "parente",  "reu": "Banco Sul",            "tema": "negativacao por tarifa indevida", "_nota": "mesma tese de fernando (negativacao indevida + indebito em dobro) com fatos e vocabulario distintos" },
+    "renata":   { "arquivo": "renata.txt",   "caso_base": "negativacao", "papel": "impostor", "reu": "Fale Facil Idiomas",   "tema": "multa de rescisao de curso", "_nota": "assunto diferente; coincide com fernando so na citacao do art. 6, VI do CDC" }
+  },
+
+  "_pares_esperados_doc": "Cada item compara uma variacao (query) com o original do seu caso-base (alvo) e diz o rotulo que o sistema deve produzir na Fase 5. Sao os pares que a Fase 7 usa para a matriz de confusao.",
+  "pares_esperados": [
+    { "query": "joao",    "alvo": "maria",    "rotulo_esperado": "copia",           "_motivo": "texto identico, apenas dados pessoais trocados" },
+    { "query": "pedro",   "alvo": "maria",    "rotulo_esperado": "parente_de_tese", "_motivo": "mesma tese juridica, fatos e vocabulario diferentes" },
+    { "query": "ana",     "alvo": "maria",    "rotulo_esperado": "diferente",       "_motivo": "assunto distinto; so a citacao generica do art. 6, VI coincide" },
+
+    { "query": "beatriz", "alvo": "carlos",   "rotulo_esperado": "copia",           "_motivo": "texto identico, apenas dados pessoais trocados" },
+    { "query": "rafael",  "alvo": "carlos",   "rotulo_esperado": "parente_de_tese", "_motivo": "mesma tese juridica, fatos e vocabulario diferentes" },
+    { "query": "juliana", "alvo": "carlos",   "rotulo_esperado": "diferente",       "_motivo": "assunto distinto; so a citacao generica do art. 6, VI coincide" },
+
+    { "query": "marcos",   "alvo": "sandra",  "rotulo_esperado": "copia",           "_motivo": "texto identico, apenas dados pessoais trocados" },
+    { "query": "patricia", "alvo": "sandra",  "rotulo_esperado": "parente_de_tese", "_motivo": "mesma tese juridica, fatos e vocabulario diferentes" },
+    { "query": "bruno",    "alvo": "sandra",  "rotulo_esperado": "diferente",       "_motivo": "assunto distinto; so a citacao generica do art. 6, VI coincide" },
+
+    { "query": "lucas",   "alvo": "fernando", "rotulo_esperado": "copia",           "_motivo": "texto identico, apenas dados pessoais trocados" },
+    { "query": "camila",  "alvo": "fernando", "rotulo_esperado": "parente_de_tese", "_motivo": "mesma tese juridica, fatos e vocabulario diferentes" },
+    { "query": "renata",  "alvo": "fernando", "rotulo_esperado": "diferente",       "_motivo": "assunto distinto; so a citacao generica do art. 6, VI coincide" }
+  ],
+
+  "_recall_at_k_doc": "Para cada documento usado como query, lista os 'parentes verdadeiros' presentes no acervo - ou seja, os documentos que compartilham a MESMA tese (familia do caso-base): original + copia + parente. O impostor NAO entra na lista de relevantes da familia, e ele proprio, como query, nao tem parentes verdadeiros (lista vazia). A Fase 7 usa estas listas para o recall@k.",
+  "recall_at_k": {
+    "maria":    ["joao", "pedro"],
+    "joao":     ["maria", "pedro"],
+    "pedro":    ["maria", "joao"],
+    "ana":      [],
+
+    "carlos":   ["beatriz", "rafael"],
+    "beatriz":  ["carlos", "rafael"],
+    "rafael":   ["carlos", "beatriz"],
+    "juliana":  [],
+
+    "sandra":   ["marcos", "patricia"],
+    "marcos":   ["sandra", "patricia"],
+    "patricia": ["sandra", "marcos"],
+    "bruno":    [],
+
+    "fernando": ["lucas", "camila"],
+    "lucas":    ["fernando", "camila"],
+    "camila":   ["fernando", "lucas"],
+    "renata":   []
+  }
+}
