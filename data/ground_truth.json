@@ -3,7 +3,8 @@
 
   "_rotulos_possiveis": ["copia", "versao", "parente_de_tese", "diferente"],
 
-  "_observacao_versao": "Este dataset NAO inclui um exemplo do rotulo 'versao' (mesmo caso com texto editado/reescrito parcialmente). Os papeis pedidos para a Fase 1 foram apenas original/copia/parente/impostor. O rotulo 'versao' continua no espaco de classificacao do sistema; se quiser exercita-lo, basta acrescentar depois uma variacao editada de um original.",
+
+  "_observacao_versao": "Cada caso-base tem uma variacao 'versao' (<orig>_versao): o MESMO caso do original (mesmas partes, fatos, valores, reu e tese), mas com o texto EDITADO - fatos e fundamentacao reescritos, abertura e pedidos quase intactos. Difere da copia (texto quase identico) e do parente (caso diferente). Alvo de projeto: difflib(versao, original) na faixa 0.70-0.90 (abaixo do corte de copia 0.90, acima da reescrita total). Medidos: maria 0.722, carlos 0.749, sandra 0.813, fernando 0.867.",
 
   "_citacao_generica_compartilhada": "Em cada caso-base, o original e o seu impostor citam ambos o art. 6, VI do CDC (reparacao de danos) - a clausula mais boilerplate do Codigo. Esse e o unico ponto de contato entre eles. E exatamente o jargao que a Fase 6 deve filtrar para nao confundir impostor com parente.",
 
@@ -53,7 +54,12 @@
     "fernando": { "arquivo": "fernando.txt", "caso_base": "negativacao", "papel": "original", "reu": "Telecom Brasil",       "tema": "negativacao por divida paga" },
     "lucas":    { "arquivo": "lucas.txt",    "caso_base": "negativacao", "papel": "copia",    "reu": "Telecom Brasil",       "tema": "negativacao por divida paga", "_nota": "texto identico ao de fernando; mudam apenas dados pessoais" },
     "camila":   { "arquivo": "camila.txt",   "caso_base": "negativacao", "papel": "parente",  "reu": "Banco Sul",            "tema": "negativacao por tarifa indevida", "_nota": "mesma tese de fernando (negativacao indevida + indebito em dobro) com fatos e vocabulario distintos" },
-    "renata":   { "arquivo": "renata.txt",   "caso_base": "negativacao", "papel": "impostor", "reu": "Fale Facil Idiomas",   "tema": "multa de rescisao de curso", "_nota": "assunto diferente; coincide com fernando so na citacao do art. 6, VI do CDC" }
+    "renata":   { "arquivo": "renata.txt",   "caso_base": "negativacao", "papel": "impostor", "reu": "Fale Facil Idiomas",   "tema": "multa de rescisao de curso", "_nota": "assunto diferente; coincide com fernando so na citacao do art. 6, VI do CDC" },
+
+    "maria_versao":    { "arquivo": "maria_versao.txt",    "caso_base": "voo",         "papel": "versao", "reu": "LATAM",          "tema": "voo cancelado",              "_nota": "mesmo caso de maria, texto editado (fatos e fundamentacao reescritos); difflib=0.722" },
+    "carlos_versao":   { "arquivo": "carlos_versao.txt",   "caso_base": "saude",       "papel": "versao", "reu": "Unimed",         "tema": "negativa de cirurgia",       "_nota": "mesmo caso de carlos, texto editado; difflib=0.749" },
+    "sandra_versao":   { "arquivo": "sandra_versao.txt",   "caso_base": "produto",     "papel": "versao", "reu": "Eletro Center",  "tema": "geladeira com defeito",      "_nota": "mesmo caso de sandra, texto editado; difflib=0.813" },
+    "fernando_versao": { "arquivo": "fernando_versao.txt", "caso_base": "negativacao", "papel": "versao", "reu": "Telecom Brasil", "tema": "negativacao por divida paga", "_nota": "mesmo caso de fernando, texto editado; difflib=0.867" }
   },
 
   "_pares_esperados_doc": "Cada item compara uma variacao (query) com o original do seu caso-base (alvo) e diz o rotulo que o sistema deve produzir na Fase 5. Sao os pares que a Fase 7 usa para a matriz de confusao.",
@@ -72,29 +78,38 @@
 
     { "query": "lucas",   "alvo": "fernando", "rotulo_esperado": "copia",           "_motivo": "texto identico, apenas dados pessoais trocados" },
     { "query": "camila",  "alvo": "fernando", "rotulo_esperado": "parente_de_tese", "_motivo": "mesma tese juridica, fatos e vocabulario diferentes" },
-    { "query": "renata",  "alvo": "fernando", "rotulo_esperado": "diferente",       "_motivo": "assunto distinto; so a citacao generica do art. 6, VI coincide" }
+    { "query": "renata",  "alvo": "fernando", "rotulo_esperado": "diferente",       "_motivo": "assunto distinto; so a citacao generica do art. 6, VI coincide" },
+
+    { "query": "maria_versao",    "alvo": "maria",    "rotulo_esperado": "versao", "_motivo": "mesmo caso, texto editado (difflib na faixa 0.70-0.90)" },
+    { "query": "carlos_versao",   "alvo": "carlos",   "rotulo_esperado": "versao", "_motivo": "mesmo caso, texto editado (difflib na faixa 0.70-0.90)" },
+    { "query": "sandra_versao",   "alvo": "sandra",   "rotulo_esperado": "versao", "_motivo": "mesmo caso, texto editado (difflib na faixa 0.70-0.90)" },
+    { "query": "fernando_versao", "alvo": "fernando", "rotulo_esperado": "versao", "_motivo": "mesmo caso, texto editado (difflib na faixa 0.70-0.90)" }
   ],
 
   "_recall_at_k_doc": "Para cada documento usado como query, lista os 'parentes verdadeiros' presentes no acervo - ou seja, os documentos que compartilham a MESMA tese (familia do caso-base): original + copia + parente. O impostor NAO entra na lista de relevantes da familia, e ele proprio, como query, nao tem parentes verdadeiros (lista vazia). A Fase 7 usa estas listas para o recall@k.",
   "recall_at_k": {
-    "maria":    ["joao", "pedro"],
-    "joao":     ["maria", "pedro"],
-    "pedro":    ["maria", "joao"],
-    "ana":      [],
+    "maria":        ["joao", "pedro", "maria_versao"],
+    "joao":         ["maria", "pedro", "maria_versao"],
+    "pedro":        ["maria", "joao", "maria_versao"],
+    "maria_versao": ["maria", "joao", "pedro"],
+    "ana":          [],
 
-    "carlos":   ["beatriz", "rafael"],
-    "beatriz":  ["carlos", "rafael"],
-    "rafael":   ["carlos", "beatriz"],
-    "juliana":  [],
+    "carlos":        ["beatriz", "rafael", "carlos_versao"],
+    "beatriz":       ["carlos", "rafael", "carlos_versao"],
+    "rafael":        ["carlos", "beatriz", "carlos_versao"],
+    "carlos_versao": ["carlos", "beatriz", "rafael"],
+    "juliana":       [],
 
-    "sandra":   ["marcos", "patricia"],
-    "marcos":   ["sandra", "patricia"],
-    "patricia": ["sandra", "marcos"],
-    "bruno":    [],
+    "sandra":        ["marcos", "patricia", "sandra_versao"],
+    "marcos":        ["sandra", "patricia", "sandra_versao"],
+    "patricia":      ["sandra", "marcos", "sandra_versao"],
+    "sandra_versao": ["sandra", "marcos", "patricia"],
+    "bruno":         [],
 
-    "fernando": ["lucas", "camila"],
-    "lucas":    ["fernando", "camila"],
-    "camila":   ["fernando", "lucas"],
-    "renata":   []
+    "fernando":        ["lucas", "camila", "fernando_versao"],
+    "lucas":           ["fernando", "camila", "fernando_versao"],
+    "camila":          ["fernando", "lucas", "fernando_versao"],
+    "fernando_versao": ["fernando", "lucas", "camila"],
+    "renata":          []
   }
 }
