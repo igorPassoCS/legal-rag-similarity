@@ -8,7 +8,8 @@
       "Bash(python -m pip install openai --quiet)",
       "Bash(python src/matching.py)",
       "Bash(python -c ' *)",
-      "Bash(python src/decision.py)"
+      "Bash(python src/decision.py)",
+      "Bash(python demo.py)"
     ]
   }
 }

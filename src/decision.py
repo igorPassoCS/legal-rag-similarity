@@ -18,6 +18,8 @@ Contrato de saida:
 
 import difflib
 
+from matching import match_query_against_acervo
+
 # ---------------------------------------------------------------------------
 # CORTES (calibrados contra data/ground_truth.json).
 #
@@ -128,6 +130,77 @@ def classificar(correspondencias, texto_query=None, texto_candidato=None):
             f"(cos={fatos:.3f} < {FATOS_ALTA}) -> mesma tese, caso diferente"
         ),
     }
+
+
+# ---------------------------------------------------------------------------
+# Fase 6 - saida estruturada (o "produto" consumido pela geracao de defesa).
+# ---------------------------------------------------------------------------
+
+# Rotulos que geram acao (entram na saida). "diferente" nao gera acao e por
+# isso NAO aparece - ver justificativa no final do arquivo.
+ROTULOS_RELACIONADOS = ("copia", "versao", "parente_de_tese")
+
+# Prioridade de ordenacao: primeiro "mesmo caso" (copia/versao), depois parente.
+_PRIORIDADE = {"copia": 0, "versao": 0, "parente_de_tese": 1}
+
+
+def _recomendacao(rotulo, scores):
+    """Traduz o rotulo em uma acao curta, coerente com a arquitetura."""
+    if rotulo == "copia":
+        return "Documento duplicado. Vincular ao original; confirmacao humana."
+    if rotulo == "versao":
+        return "Nova versao do caso. Encadear com historico; destacar o que mudou."
+    if rotulo == "parente_de_tese":
+        fatos = scores.get("fatos") or 0.0
+        return (
+            "Mesma tese, fatos diferentes. Reaproveitar a fundamentacao como base "
+            "para a defesa; NAO copiar os fatos. "
+            f"Divergencia nos fatos: cos={fatos:.3f}."
+        )
+    return ""
+
+
+def analisar_query(query_id, chunks_por_doc, textos_por_doc):
+    """Produz a saida estruturada da query contra o acervo (o produto do sistema).
+
+    Para cada candidato relacionado (rotulo != "diferente"), um registro com o
+    rotulo, os scores por secao que o justificam, o motivo rastreavel e a
+    recomendacao acionavel. Candidatos "diferente" nao entram (nao ha acao).
+
+    Ordenado por relevancia: mesmo-caso (copia/versao) antes de parente; dentro
+    de cada grupo, por fundamentacao decrescente.
+    """
+    registros = []
+    for r in match_query_against_acervo(query_id, chunks_por_doc):
+        cand = r["candidato"]
+        dec = classificar(
+            r["correspondencias"], textos_por_doc[query_id], textos_por_doc[cand]
+        )
+        if dec["rotulo"] == "diferente":
+            continue
+        s = dec["scores_por_secao"]
+        registros.append(
+            {
+                "documento": query_id,
+                "candidato": cand,
+                "rotulo": dec["rotulo"],
+                "score_por_secao": {
+                    "fatos": s.get("fatos"),
+                    "fundamentacao": s.get("fundamentacao"),
+                    "pedidos": s.get("pedidos"),
+                },
+                "motivo": dec["motivo"],
+                "recomendacao": _recomendacao(dec["rotulo"], s),
+            }
+        )
+
+    registros.sort(
+        key=lambda x: (
+            _PRIORIDADE[x["rotulo"]],
+            -(x["score_por_secao"]["fundamentacao"] or 0.0),
+        )
+    )
+    return registros
 
 
 if __name__ == "__main__":
