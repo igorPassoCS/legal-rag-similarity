@@ -9,7 +9,8 @@
       "Bash(python src/matching.py)",
       "Bash(python -c ' *)",
       "Bash(python src/decision.py)",
-      "Bash(python demo.py)"
+      "Bash(python demo.py)",
+      "Bash(python src/evaluate.py)"
     ]
   }
 }
